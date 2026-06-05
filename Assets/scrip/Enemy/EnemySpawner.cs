@@ -32,7 +32,7 @@ public class EnemySpawner : MonoBehaviour
     {
         GameObject enemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
 
-        EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
+        EnemyAI movement = enemy.GetComponent<EnemyAI>();
 
         if (movement != null)
         {
