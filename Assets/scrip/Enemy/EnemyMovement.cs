@@ -2,77 +2,128 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    // Định nghĩa các trạng thái của Quái vật
     public enum EnemyState { Walk, Scan, Run }
-    [Header("Trạng Thái Hiện Tại")]
+
+    [Header("--- TRẠNG THÁI HIỆN TẠI ---")]
     public EnemyState currentState = EnemyState.Walk;
 
-    [Header("Đường đi (Walk)")]
+    [Header("--- ĐƯỜNG ĐI (WALK STAGE) ---")]
     public Transform[] waypoints;
+    public float walkSpeed = 2f;
     private int currentWaypointIndex = 0;
 
-    [Header("Tốc độ")]
-    public float walkSpeed = 2f;
-    public float runSpeed = 4f;
-
-    [Header("Quét Tìm Người Chơi (Scan)")]
-    public float scanRange = 5f;          // Khoảng cách quét
-    public LayerMask playerLayer;         // Layer của Người chơi để tối ưu performance
-    public string playerTag = "Player";    // Tag dùng để kiểm tra
+    [Header("--- QUÉT TÌM NGƯỜI CHƠI (SCAN STAGE) ---")]
+    public float scanRange = 5f;
+    public string playerTag = "Player";
     private Transform playerTransform;
+    private SpriteRenderer playerSpriteRenderer;
 
-    [Header("Tấn Công (Run)")]
-    public float attackRange = 1f;         // Vùng nhất định để tấn công
-    public int damageToPlayer = 10;        // Sát thương gây ra cho Player
-    public float attackCooldown = 1.5f;    // Thời gian hồi chiêu
+    [Header("--- TẤN CÔNG & ĐUỔI THEO (RUN STAGE) ---")]
+    public float runSpeed = 4f;
+    public int damageToPlayer = 10;
+    public float attackCooldown = 1.5f;
     private float lastAttackTime;
 
-    [Header("Sát thương khi đi hết đường")]
+    private Vector3 targetRunPosition;
+    private bool isCollidingWithPlayer = false;
+
+    [Header("--- ĐÍCH ĐẾN ĐƯỜNG ĐI ---")]
     public int finalDamage = 1;
+
+    private Animator anim;
+    private SpriteRenderer mySpriteRenderer;
+    private string currentAnimState = "";
+    private bool isAttacking = false;
+
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+        mySpriteRenderer = GetComponent<SpriteRenderer>();
+        FindPlayerRef();
+    }
 
     void Update()
     {
-        // Luôn cập nhật hướng xoay của Sprite dựa trên hướng di chuyển (ngoại trừ khi đứng yên)
+        CheckSpriteCollision();
         HandleStateMachine();
     }
 
-    // --- HỆ THỐNG QUẢN LÝ TRẠNG THÁI (STATE MACHINE) ---
     void HandleStateMachine()
     {
         switch (currentState)
         {
             case EnemyState.Walk:
                 MoveToWaypoint();
-                ScanForPlayer(); // Vừa đi vừa quét tìm người chơi
+                ScanForPlayerMath();
                 break;
 
             case EnemyState.Scan:
-                // Nếu bạn muốn quái đứng yên để quét hoặc thực hiện hiệu ứng quét, xử lý ở đây.
-                // Ở đây mặc định vừa đi vừa quét (nằm trong Walk), nếu "Scan" tách riêng, ta có thể gọi:
-                ScanForPlayer();
+                ScanForPlayerMath();
                 if (playerTransform == null) currentState = EnemyState.Walk;
                 break;
 
             case EnemyState.Run:
-                ChaseAndAttackPlayer();
+                ChargeToPlayerPosition();
                 break;
         }
     }
 
-    // --- GIAI ĐOẠN 1: WALK (Đi tuần tra giữa các Waypoints) ---
+    void FindPlayerRef()
+    {
+        GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
+        if (playerObj != null)
+        {
+            playerTransform = playerObj.transform;
+            playerSpriteRenderer = playerObj.GetComponent<SpriteRenderer>();
+        }
+    }
+
+    void CheckSpriteCollision()
+    {
+        if (playerTransform == null || playerSpriteRenderer == null || mySpriteRenderer == null)
+        {
+            isCollidingWithPlayer = false;
+            return;
+        }
+
+        Bounds myBounds = mySpriteRenderer.bounds;
+        Bounds playerBounds = playerSpriteRenderer.bounds;
+
+        bool dynamicCollision = myBounds.Intersects(playerBounds);
+
+        if (dynamicCollision && !isCollidingWithPlayer)
+        {
+            isCollidingWithPlayer = true;
+            targetRunPosition = transform.position;
+        }
+        else if (!dynamicCollision && isCollidingWithPlayer)
+        {
+            isCollidingWithPlayer = false;
+            isAttacking = false;
+            targetRunPosition = playerTransform.position;
+        }
+    }
+
+    void PlayAnim(string animName)
+    {
+        if (anim == null || currentAnimState == animName) return;
+
+        anim.Play(animName);
+        currentAnimState = animName;
+    }
+
     void MoveToWaypoint()
     {
         if (waypoints == null || waypoints.Length == 0) return;
 
+        PlayAnim("Enemy_1");
+
         Transform target = waypoints[currentWaypointIndex];
         Vector3 direction = target.position - transform.position;
 
-        // Di chuyển với tốc độ walkSpeed
         transform.position = Vector3.MoveTowards(transform.position, target.position, walkSpeed * Time.deltaTime);
-
         FlipSprite(direction.x);
 
-        // Kiểm tra xem đã đến waypoint chưa
         if ((target.position - transform.position).sqrMagnitude < 0.05f * 0.05f)
         {
             currentWaypointIndex++;
@@ -83,63 +134,84 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // --- GIAI ĐOẠN 2: SCAN (Quét tìm người chơi theo vùng diện rộng) ---
-    void ScanForPlayer()
+    void ScanForPlayerMath()
     {
-        // Quét một vùng hình cầu xung quanh quái vật (Vùng to)
-        Collider2D hitPlayer = Physics2D.OverlapCircle(transform.position, scanRange, playerLayer);
+        if (playerTransform == null) FindPlayerRef();
+        if (playerTransform == null) return;
 
-        if (hitPlayer != null && hitPlayer.CompareTag(playerTag))
+        float distance = Vector2.Distance(transform.position, playerTransform.position);
+
+        if (distance <= scanRange)
         {
-            playerTransform = hitPlayer.transform;
-            currentState = EnemyState.Run; // Tìm thấy -> Chuyển sang Run
+            targetRunPosition = playerTransform.position;
+            currentState = EnemyState.Run;
         }
     }
 
-    // --- GIAI ĐOẠN 3: RUN & ATTACK (Đuổi theo và tấn công khi tới vùng nhất định) ---
-    void ChaseAndAttackPlayer()
+    void ChargeToPlayerPosition()
     {
-        if (playerTransform == null)
+        if (isCollidingWithPlayer)
         {
-            currentState = EnemyState.Walk; // Mất dấu người chơi -> Quay lại đi tuần
-            return;
-        }
+            if (playerTransform != null)
+            {
+                Vector3 dirToPlayer = playerTransform.position - transform.position;
+                FlipSprite(dirToPlayer.x);
+            }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-        Vector3 direction = playerTransform.position - transform.position;
-
-        FlipSprite(direction.x);
-
-        // Nếu nằm ngoài tầm tấn công -> Tiếp tục đuổi theo với tốc độ runSpeed
-        if (distanceToPlayer > attackRange)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, playerTransform.position, runSpeed * Time.deltaTime);
-        }
-        else
-        {
-            // Đã vào vùng nhất định (attackRange) -> Tiến hành tấn công
             if (Time.time >= lastAttackTime + attackCooldown)
             {
                 Attack();
                 lastAttackTime = Time.time;
             }
+            else if (!isAttacking)
+            {
+                PlayAnim("Enemy_1 0");
+            }
+            return;
         }
 
-        // Tùy chọn: Nếu người chơi chạy quá xa tầm quét + 2 đơn vị, quái sẽ bỏ đuổi theo
-        if (distanceToPlayer > scanRange + 2f)
+        if (playerTransform != null)
         {
-            playerTransform = null;
-            currentState = EnemyState.Walk;
+            targetRunPosition = playerTransform.position;
+        }
+
+        PlayAnim("Enemy_run");
+
+        Vector3 direction = targetRunPosition - transform.position;
+        FlipSprite(direction.x);
+
+        transform.position = Vector3.MoveTowards(transform.position, targetRunPosition, runSpeed * Time.deltaTime);
+
+        if ((targetRunPosition - transform.position).sqrMagnitude < 0.05f * 0.05f)
+        {
+            float distToPlayer = playerTransform != null ? Vector2.Distance(transform.position, playerTransform.position) : 999f;
+            if (distToPlayer > scanRange)
+            {
+                currentState = EnemyState.Walk;
+            }
         }
     }
 
     void Attack()
     {
-        Debug.Log("Quái vật tấn công Người chơi!");
-        // Gọi hàm nhận sát thương từ phía Script của Player (Ví dụ: playerTransform.GetComponent<PlayerHealth>().TakeDamage(damageToPlayer);)
+        isAttacking = true;
+        PlayAnim("Enemy_attack");
+
+        float attackDuration = 0.5f;
+        Invoke("ResetAttackState", attackDuration);
     }
 
-    // Đi đến điểm cuối cùng của đường đi
+    void ResetAttackState()
+    {
+        isAttacking = false;
+        currentAnimState = "";
+    }
+
+    public void TakeDamage(int damage)
+    {
+        Debug.Log("Quái bị mất máu: " + damage);
+    }
+
     void ReachEnd()
     {
         if (GameManager.instance != null)
@@ -149,7 +221,6 @@ public class EnemyAI : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Hàm lật mặt Sprite dựa trên hướng X
     void FlipSprite(float directionX)
     {
         if (Mathf.Abs(directionX) > 0.001f)
@@ -164,38 +235,15 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    // --- XỬ LÝ VA CHẠM (Bắt va chạm gây/nhận sát thương từ Sprite Renderer) ---
-    // Lưu ý: Game Object cần có BoxCollider2D/CircleCollider2D đặt Is Trigger = true
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        // Ví dụ 1: Quái chạm vào vũ khí/đạn của Player để NHẬN sát thương
-        if (collision.CompareTag("PlayerWeapon"))
-        {
-            TakeDamage(10); // Hàm quái nhận sát thương
-        }
-
-        // Ví dụ 2: Nếu muốn quái gây sát thương trực tiếp khi chạm vào người Player (thay vì dùng tầm Attack ở trên)
-        if (collision.CompareTag(playerTag) && currentState == EnemyState.Run)
-        {
-            Debug.Log("Quái va chạm trực tiếp và gây sát thương cho Player");
-        }
-    }
-
-    public void TakeDamage(int damage)
-    {
-        Debug.Log("Quái bị mất máu: " + damage);
-        // Xử lý trừ máu của quái ở đây, nếu máu <= 0 thì Destroy(gameObject);
-    }
-
-    // Vẽ vùng quét trong cửa chọn Scene để bạn dễ căn chỉnh độ rộng (Gizmos)
     private void OnDrawGizmosSelected()
     {
-        // Màu đỏ cho vùng tấn công
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-
-        // Màu vàng cho vùng quét tìm Player
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, scanRange);
+
+        if (mySpriteRenderer != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(mySpriteRenderer.bounds.center, mySpriteRenderer.bounds.size);
+        }
     }
 }
