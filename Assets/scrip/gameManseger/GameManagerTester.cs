@@ -14,9 +14,6 @@ public class GameManagerTester : MonoBehaviour
             GameManager.instance.AddMoney(10);
         }
 
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            GameManager.instance.SetWave(GameManager.instance.currentWave + 1);
-        }
+       
     }
 }

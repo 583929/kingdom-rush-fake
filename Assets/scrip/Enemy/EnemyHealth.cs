@@ -31,6 +31,11 @@ public class EnemyHealth : MonoBehaviour
             GameManager.instance.AddMoney(rewardMoney);
         }
 
+        if (EnemySpawner.instance != null)
+        {
+            EnemySpawner.instance.NotifyEnemyRemoved();
+        }
+
         Destroy(gameObject);
     }
 }

@@ -14,6 +14,10 @@ public class EnemySpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public float timeBetweenSpawn = 1f;
 
+    // number of currently alive enemies spawned by this spawner
+    [HideInInspector]
+    public int activeEnemies = 0;
+
     void Awake()
     {
         instance = this;
@@ -26,11 +30,17 @@ public class EnemySpawner : MonoBehaviour
             SpawnEnemy();
             yield return new WaitForSeconds(timeBetweenSpawn);
         }
+
+        // wait until all spawned enemies are gone (dead or reached end)
+        yield return new WaitUntil(() => activeEnemies <= 0);
     }
 
     void SpawnEnemy()
     {
         GameObject enemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+
+        // track active enemies
+        activeEnemies++;
 
         EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
 
@@ -38,5 +48,11 @@ public class EnemySpawner : MonoBehaviour
         {
             movement.waypoints = waypoints;
         }
+    }
+
+    // called by enemies when they die or reach the end
+    public void NotifyEnemyRemoved()
+    {
+        activeEnemies = Mathf.Max(0, activeEnemies - 1);
     }
 }

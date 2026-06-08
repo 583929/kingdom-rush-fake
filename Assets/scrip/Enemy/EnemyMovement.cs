@@ -66,6 +66,11 @@ public class EnemyMovement : MonoBehaviour
             GameManager.instance.TakeDamage(damageToPlayer);
         }
 
+        if (EnemySpawner.instance != null)
+        {
+            EnemySpawner.instance.NotifyEnemyRemoved();
+        }
+
         Destroy(gameObject);
     }
 }

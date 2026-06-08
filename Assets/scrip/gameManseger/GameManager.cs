@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using System;
 
@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public int money = 100;
     public int currentWave = 1;
     [Header("Gameplay")]
-    [SerializeField] private int maxWave = 10;
+    [Range(1, 100)]
+    public int maxWave = 10;
 
     [Header("UI")]
     public TMP_Text healthText;
@@ -100,7 +101,7 @@ public class GameManager : MonoBehaviour
         // fire wave completed event for listeners
         OnWaveCompleted?.Invoke(currentWave);
 
-        if (currentWave >= maxWave && !finalWaveReached)
+        if (currentWave >= maxWave && finalWaveReached)
         {
             // mark final wave reached and show finalWavePanel instead of immediate win
             finalWaveReached = true;
