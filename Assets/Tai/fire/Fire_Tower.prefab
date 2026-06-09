@@ -53,7 +53,7 @@ MonoBehaviour:
   projectileDuration: 2
   damage: 10
   price: 100
-  firePoint: {fileID: 0}
+  firePoint: {fileID: 2787892832158791241}
   projectilePrefab: {fileID: 4721034466713483856, guid: ebdfc7583dc7bc04a9485804c9670681, type: 3}
   projectileSprite: {fileID: 0}
   audioSource: {fileID: 0}
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1136d841fcd17946a2870dd33f62d1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerData: {fileID: 0}
+  towerData: {fileID: 3476743131423127154}
   targetAcquisitionInterval: 0.2
   damageBonusPercent: 0.1
   burnDuration: 3
