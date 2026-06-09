@@ -53,18 +53,16 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    // Tìm đến hàm xử lý quái chết trong script của Enemy (ví dụ: Die() hoặc TakeDamage())
     void Die()
     {
-        if (canvasTransform != null)
+        // Gọi thẳng sang script Money để cộng thêm 10 tiền
+        if (Money.instance != null)
         {
-            Destroy(canvasTransform.gameObject);
+            Money.instance.AddMoney(10);
         }
 
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.AddMoney(rewardMoney);
-        }
-
+        // Phá hủy quái vật, làm quái vật biến mất khỏi map
         Destroy(gameObject);
     }
 }

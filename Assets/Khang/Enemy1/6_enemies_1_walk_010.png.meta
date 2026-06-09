@@ -1,5 +1,13 @@
 fileFormatVersion: 2
-guid: 41370e58df806734abdeb991b4a97ccd
+<<<<<<<< Updated upstream:Assets/Khang/Enemy1/6_enemies_1_walk_010.png.meta
+guid: c45735c671090d8419327ee20ade3551
+========
+<<<<<<< Updated upstream:Assets/unity down/quái.png.meta
+guid: 4f30ce4b68f3eb84290a07a41f1e2dcd
+=======
+guid: 1050dc1a622fbaa4faed38d5ad173b0e
+>>>>>>> Stashed changes:Assets/Khang/Enemy1/6_enemies_1_walk_005.png.meta
+>>>>>>>> Stashed changes:Assets/unity down/quái.png.meta
 TextureImporter:
   internalIDToNameTable:
   - first:

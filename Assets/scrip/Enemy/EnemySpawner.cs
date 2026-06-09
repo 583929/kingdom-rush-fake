@@ -33,12 +33,12 @@ public class EnemySpawner : MonoBehaviour
         if (enemyPrefab == null) return;
 
         GameObject enemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-        EnemyAI enemyAI = enemy.GetComponent<EnemyAI>();
+        EnemyMovement enemyAI = enemy.GetComponent<EnemyMovement>();
 
         if (enemyAI != null)
         {
             enemyAI.waypoints = waypoints;
-            enemyAI.currentState = EnemyAI.EnemyState.Walk;
+            enemyAI.currentState = EnemyMovement.EnemyState.Walk;
         }
     }
 }

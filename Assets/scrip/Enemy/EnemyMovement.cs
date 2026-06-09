@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyMovement : MonoBehaviour
 {
     public enum EnemyState { Walk, Scan, Run }
 
@@ -32,7 +32,6 @@ public class EnemyAI : MonoBehaviour
 
     private Animator anim;
     private SpriteRenderer mySpriteRenderer;
-    private string currentAnimState = "";
     private bool isAttacking = false;
 
     void Start()
@@ -104,19 +103,14 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void PlayAnim(string animName)
-    {
-        if (anim == null || currentAnimState == animName) return;
-
-        anim.Play(animName);
-        currentAnimState = animName;
-    }
-
     void MoveToWaypoint()
     {
         if (waypoints == null || waypoints.Length == 0) return;
 
-        PlayAnim("Enemy_1");
+        if (anim != null && anim.runtimeAnimatorController != null)
+        {
+            anim.Play("Enemy_walk");
+        }
 
         Transform target = waypoints[currentWaypointIndex];
         Vector3 direction = target.position - transform.position;
@@ -165,7 +159,10 @@ public class EnemyAI : MonoBehaviour
             }
             else if (!isAttacking)
             {
-                PlayAnim("Enemy_1 0");
+                if (anim != null && anim.runtimeAnimatorController != null)
+                {
+                    anim.Play("Enemy_walk");
+                }
             }
             return;
         }
@@ -175,7 +172,10 @@ public class EnemyAI : MonoBehaviour
             targetRunPosition = playerTransform.position;
         }
 
-        PlayAnim("Enemy_run");
+        if (anim != null && anim.runtimeAnimatorController != null)
+        {
+            anim.Play("Enemy_run");
+        }
 
         Vector3 direction = targetRunPosition - transform.position;
         FlipSprite(direction.x);
@@ -195,7 +195,10 @@ public class EnemyAI : MonoBehaviour
     void Attack()
     {
         isAttacking = true;
-        PlayAnim("Enemy_attack");
+        if (anim != null && anim.runtimeAnimatorController != null)
+        {
+            anim.Play("Enemy_attack");
+        }
 
         float attackDuration = 0.5f;
         Invoke("ResetAttackState", attackDuration);
@@ -204,7 +207,6 @@ public class EnemyAI : MonoBehaviour
     void ResetAttackState()
     {
         isAttacking = false;
-        currentAnimState = "";
     }
 
     public void TakeDamage(int damage)

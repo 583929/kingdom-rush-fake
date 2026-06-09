@@ -1,5 +1,13 @@
 fileFormatVersion: 2
-guid: 9c779ff21342bb64fb268e7c3ff79b7d
+<<<<<<<< Updated upstream:Assets/Khang/Enemy1/6_enemies_1_walk_011.png.meta
+guid: 3494f16b0124f394487aa9b35fd5e634
+========
+<<<<<<< Updated upstream:Assets/unity down/tim 1.png.meta
+guid: 0146483060bc8d54191166af7efc2eeb
+=======
+guid: db076b3d59a3f3d4b9696d80eddd6a0a
+>>>>>>> Stashed changes:Assets/Khang/Enemy1/6_enemies_1_walk_000.png.meta
+>>>>>>>> Stashed changes:Assets/unity down/tim 1.png.meta
 TextureImporter:
   internalIDToNameTable:
   - first:
