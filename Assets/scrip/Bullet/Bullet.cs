@@ -3,14 +3,37 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     private Transform target;
-    private int damage;
+    private float damage;
+    private TowerBase tower;
 
-    public float speed = 8f;
+    private float speed;
+    private float duration;
 
-    public void SetTarget(Transform enemyTarget, int bulletDamage)
+    private SpriteRenderer spriteRenderer;
+
+    public void SetTarget(
+        Transform enemyTarget,
+        float bulletDamage,
+        TowerBase ownerTower,
+        float bulletSpeed,
+        float bulletDuration,
+        Sprite bulletSprite
+    )
     {
         target = enemyTarget;
         damage = bulletDamage;
+        tower = ownerTower;
+        speed = bulletSpeed;
+        duration = bulletDuration;
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null && bulletSprite != null)
+        {
+            spriteRenderer.sprite = bulletSprite;
+        }
+
+        Destroy(gameObject, duration);
     }
 
     void Update()
@@ -21,11 +44,15 @@ public class Bullet : MonoBehaviour
             return;
         }
 
+        Vector3 direction = target.position - transform.position;
+
         transform.position = Vector2.MoveTowards(
             transform.position,
             target.position,
             speed * Time.deltaTime
         );
+
+        RotateBullet(direction);
 
         float distance = Vector2.Distance(transform.position, target.position);
 
@@ -35,6 +62,16 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    void RotateBullet(Vector3 direction)
+    {
+        if (direction == Vector3.zero)
+            return;
+
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
     void HitTarget()
     {
         EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
@@ -42,6 +79,11 @@ public class Bullet : MonoBehaviour
         if (enemyHealth != null)
         {
             enemyHealth.TakeDamage(damage);
+        }
+
+        if (tower != null)
+        {
+            tower.ApplyEffect(target);
         }
 
         Destroy(gameObject);

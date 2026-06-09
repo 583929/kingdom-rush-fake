@@ -12,6 +12,22 @@ public class EnemyMovement : MonoBehaviour
     public int damageToPlayer = 1;
 
     private int currentWaypointIndex = 0;
+    private EnemyStatusController statusController;
+
+    void Awake()
+    {
+        statusController = GetComponent<EnemyStatusController>();
+    }
+
+    void Start()
+    {
+        // Đồng bộ tốc độ gốc với EnemyStatusController
+        if (statusController != null)
+        {
+            statusController.baseMoveSpeed = speed;
+            statusController.currentMoveSpeed = speed;
+        }
+    }
 
     void Update()
     {
@@ -29,14 +45,20 @@ public class EnemyMovement : MonoBehaviour
         Vector3 currentPos = transform.position;
         Vector3 direction = targetPos - currentPos;
 
-        // move using Vector3 to preserve Z and avoid implicit casts
-        transform.position = Vector3.MoveTowards(currentPos, targetPos, speed * Time.deltaTime);
+        float moveSpeed = GetMoveSpeed();
 
-        // flip sprite only when horizontal direction changes sign
+        transform.position = Vector3.MoveTowards(
+            currentPos,
+            targetPos,
+            moveSpeed * Time.deltaTime
+        );
+
+        // Lật sprite theo hướng di chuyển
         if (Mathf.Abs(direction.x) > 0.001f)
         {
             float sign = Mathf.Sign(direction.x);
             Vector3 scale = transform.localScale;
+
             if (Mathf.Sign(scale.x) != sign)
             {
                 scale.x = Mathf.Abs(scale.x) * sign;
@@ -44,7 +66,6 @@ public class EnemyMovement : MonoBehaviour
             }
         }
 
-        // use squared distance to avoid sqrt
         float sqrDistance = (targetPos - transform.position).sqrMagnitude;
         const float reachThreshold = 0.05f * 0.05f;
 
@@ -57,6 +78,16 @@ public class EnemyMovement : MonoBehaviour
                 ReachEnd();
             }
         }
+    }
+
+    float GetMoveSpeed()
+    {
+        if (statusController != null)
+        {
+            return statusController.GetCurrentMoveSpeed();
+        }
+
+        return speed;
     }
 
     void ReachEnd()
