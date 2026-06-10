@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b8150ef416d5294aa6a0cba92ef0205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 7989863523370412953, guid: d8164cefbda6d334fbc1850f68e6e76c, type: 3}
+  enemyPrefab: {fileID: 4883804547581872380, guid: d9a228bc6297a1c4f8249467e2b26dfb, type: 3}
   waypoints:
   - {fileID: 1061028953}
   - {fileID: 1372554270}
@@ -2392,7 +2392,6 @@ GameObject:
   - component: {fileID: 1241270740}
   - component: {fileID: 1241270739}
   - component: {fileID: 1241270738}
-  - component: {fileID: 1241270741}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2487,20 +2486,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &1241270741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1241270736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e012c6e38f91c44e8feb657e744b373, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerData: {fileID: 0}
-  targetAcquisitionInterval: 0.2
 --- !u!1 &1272595605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3816,6 +3801,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -5202805541114906085, guid: 831ea29c9b13d814a8d3f6e924080ec7, type: 3}
+      propertyPath: damage
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: -5202805541114906085, guid: 831ea29c9b13d814a8d3f6e924080ec7, type: 3}
       propertyPath: firePoint
       value: 
