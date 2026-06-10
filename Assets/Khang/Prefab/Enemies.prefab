@@ -15,7 +15,11 @@ GameObject:
   - component: {fileID: 6463076202238863407}
   m_Layer: 0
   m_Name: Enemies
+<<<<<<< Updated upstream
   m_TagString: Untagged
+=======
+  m_TagString: Enemy
+>>>>>>> Stashed changes
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105,7 +109,10 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth: 0
   rewardMoney: 15
+<<<<<<< Updated upstream
   healthSlider: {fileID: 0}
+=======
+>>>>>>> Stashed changes
 --- !u!114 &991076523098722928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,9 +129,15 @@ MonoBehaviour:
   waypoints: []
   walkSpeed: 2
   scanRange: 5
+<<<<<<< Updated upstream
   playerTag: Player
   runSpeed: 4
   damageToPlayer: 10
+=======
+  soldierTag: Soldier
+  runSpeed: 4
+  damageToSoldier: 10
+>>>>>>> Stashed changes
   attackCooldown: 1.5
   finalDamage: 1
 --- !u!95 &6463076202238863407

@@ -3,8 +3,13 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Máu quái")]
+<<<<<<< Updated upstream
     public int maxHealth = 100;
     public int currentHealth;
+=======
+    public float maxHealth = 1f;
+    public float currentHealth;
+>>>>>>> Stashed changes
 
     [Header("Tiền thưởng khi chết")]
     public int rewardMoney = 15;
@@ -30,8 +35,16 @@ public class EnemyHealth : MonoBehaviour
 
     void Update()
     {
+<<<<<<< Updated upstream
         // CẬP NHẬT: Ép cụm Canvas chứa thanh máu luôn hít chặt theo vị trí con quái + dịch lên trên đầu 1.5 đơn vị
         if (canvasTransform != null)
+=======
+        if (isDead) return;
+
+        currentHealth -= damage;
+
+        if (currentHealth <= 0)
+>>>>>>> Stashed changes
         {
             canvasTransform.position = transform.position + new Vector3(0, 1.5f, 0);
         }
@@ -42,9 +55,20 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+<<<<<<< Updated upstream
         if (healthSlider != null)
         {
             healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, (float)currentHealth, null);
+=======
+    void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        if (Money.instance != null)
+        {
+            Money.instance.AddMoney(rewardMoney);
+>>>>>>> Stashed changes
         }
 
         if (currentHealth <= 0)
@@ -64,5 +88,18 @@ public class EnemyHealth : MonoBehaviour
 
         // Phá hủy quái vật, làm quái vật biến mất khỏi map
         Destroy(gameObject);
+    }
+
+    public void DieWithoutReward()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        Destroy(gameObject);
+    }
+
+    public bool IsDead()
+    {
+        return isDead;
     }
 }
