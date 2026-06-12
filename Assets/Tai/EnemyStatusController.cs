@@ -97,7 +97,7 @@ public class EnemyStatusController : MonoBehaviour
 
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage((int)damage);
+                enemyHealth.TakeDamage(damage);
             }
 
             burnTickTimer = 1f;
@@ -123,7 +123,7 @@ public class EnemyStatusController : MonoBehaviour
 
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage((int)damage);
+                enemyHealth.TakeDamage(damage);
             }
 
             frostTickTimer = 0.5f;
@@ -185,7 +185,7 @@ public class EnemyStatusController : MonoBehaviour
 
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage((int)bonusMagicDamage);
+                enemyHealth.TakeDamage(bonusMagicDamage);
             }
 
             Debug.Log("Combo Lửa + Băng: gây thêm sát thương phép!");

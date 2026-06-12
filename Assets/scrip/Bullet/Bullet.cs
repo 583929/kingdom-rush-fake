@@ -4,13 +4,31 @@ public class Bullet : MonoBehaviour
 {
     private Transform target;
     private int damage;
+    private float speed;
+    private float duration;
+    private TowerBase towerSource;
 
-    public float speed = 8f;
+    private SpriteRenderer spriteRenderer;
 
-    public void SetTarget(Transform enemyTarget, int bulletDamage)
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void SetTarget(Transform enemyTarget, int bulletDamage, TowerBase source, float projectileSpeed, float projectileDuration, Sprite projectileSprite)
     {
         target = enemyTarget;
         damage = bulletDamage;
+        towerSource = source;
+        speed = projectileSpeed;
+        duration = projectileDuration;
+
+        if (spriteRenderer != null && projectileSprite != null)
+        {
+            spriteRenderer.sprite = projectileSprite;
+        }
+
+        Destroy(gameObject, duration);
     }
 
     void Update()
@@ -37,11 +55,19 @@ public class Bullet : MonoBehaviour
 
     void HitTarget()
     {
-        EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
-
-        if (enemyHealth != null)
+        if (target != null)
         {
-            enemyHealth.TakeDamage((int)damage);
+            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
+
+            if (enemyHealth != null && !enemyHealth.IsDead())
+            {
+                enemyHealth.TakeDamage(damage);
+
+                if (towerSource != null)
+                {
+                    towerSource.ApplyEffect(target);
+                }
+            }
         }
 
         Destroy(gameObject);

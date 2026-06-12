@@ -3,20 +3,12 @@ using UnityEngine;
 public class ElectricTower : TowerBase
 {
     [Header("Electric Settings")]
-    [Tooltip("Tăng tốc độ bắn. 0.35 = nhanh hơn 35%")]
     public float fireRateBonusPercent = 0.35f;
-
-    [Tooltip("Giảm damage. 0.1 = giảm 10%")]
     public float damageReducePercent = 0.1f;
 
     [Header("Chain Lightning")]
-    [Tooltip("Khoảng cách giật lan")]
     public float chainRange = 2.5f;
-
-    [Tooltip("Số quái tối đa bị giật lan")]
     public int chainCount = 5;
-
-    [Tooltip("Sát thương giật lan. 0.15 = 15% damage tháp điện")]
     public float chainDamagePercent = 0.15f;
 
     protected override float GetDamage()
@@ -24,7 +16,6 @@ public class ElectricTower : TowerBase
         if (towerData == null)
             return 0f;
 
-        // Tháp điện giảm 10% damage so với damage gốc
         return towerData.damage * (1f - damageReducePercent);
     }
 
@@ -33,10 +24,7 @@ public class ElectricTower : TowerBase
         if (towerData == null)
             return 1f;
 
-        // Shoot Interval càng nhỏ thì bắn càng nhanh
-        // Nhanh hơn 35% nghĩa là chia cho 1.35
         float fasterRate = 1f + fireRateBonusPercent;
-
         return towerData.shootInterval / fasterRate;
     }
 
@@ -51,8 +39,7 @@ public class ElectricTower : TowerBase
     void ChainLightning(Transform firstEnemy)
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        int chained = 0;
+        int trackedChained = 0;
 
         for (int i = 0; i < enemies.Length; i++)
         {
@@ -61,7 +48,6 @@ public class ElectricTower : TowerBase
             if (enemy == null)
                 continue;
 
-            // Không giật lại con đã bị đạn bắn trúng
             if (enemy.transform == firstEnemy)
                 continue;
 
@@ -74,16 +60,15 @@ public class ElectricTower : TowerBase
             {
                 EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
 
-                if (enemyHealth != null)
+                if (enemyHealth != null && !enemyHealth.IsDead())
                 {
-                    float chainDamage = GetDamage() * chainDamagePercent;
-                    enemyHealth.TakeDamage((int)chainDamage);
+                    int chainDamage = (int)(GetDamage() * chainDamagePercent);
+                    enemyHealth.TakeDamage(chainDamage);
                 }
 
-                chained++;
+                trackedChained++;
 
-                // Dừng lại khi đã giật đủ 5 quái
-                if (chained >= chainCount)
+                if (trackedChained >= chainCount)
                     break;
             }
         }

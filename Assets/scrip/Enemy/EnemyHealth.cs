@@ -3,13 +3,8 @@ using UnityEngine;
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Máu quái")]
-<<<<<<< Updated upstream
-    public int maxHealth = 100;
-    public int currentHealth;
-=======
-    public float maxHealth = 1f;
+    public float maxHealth = 100f;
     public float currentHealth;
->>>>>>> Stashed changes
 
     [Header("Tiền thưởng khi chết")]
     public int rewardMoney = 15;
@@ -18,6 +13,7 @@ public class EnemyHealth : MonoBehaviour
     public Component healthSlider;
 
     private Transform canvasTransform;
+    private bool isDead = false;
 
     void Start()
     {
@@ -25,50 +21,33 @@ public class EnemyHealth : MonoBehaviour
 
         if (healthSlider != null)
         {
-            healthSlider.GetType().GetProperty("maxValue")?.SetValue(healthSlider, (float)maxHealth, null);
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, (float)currentHealth, null);
+            healthSlider.GetType().GetProperty("maxValue")?.SetValue(healthSlider, maxHealth, null);
+            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
 
-            // Tự động tìm cụm Canvas cha của Slider
             canvasTransform = healthSlider.transform.parent;
         }
     }
 
     void Update()
     {
-<<<<<<< Updated upstream
-        // CẬP NHẬT: Ép cụm Canvas chứa thanh máu luôn hít chặt theo vị trí con quái + dịch lên trên đầu 1.5 đơn vị
-        if (canvasTransform != null)
-=======
         if (isDead) return;
 
-        currentHealth -= damage;
-
-        if (currentHealth <= 0)
->>>>>>> Stashed changes
+        if (canvasTransform != null)
         {
             canvasTransform.position = transform.position + new Vector3(0, 1.5f, 0);
         }
     }
 
-    public void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-
-<<<<<<< Updated upstream
-        if (healthSlider != null)
-        {
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, (float)currentHealth, null);
-=======
-    void Die()
+    public void TakeDamage(float damage)
     {
         if (isDead) return;
-        isDead = true;
 
-        if (Money.instance != null)
+        currentHealth -= damage;
+        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+
+        if (healthSlider != null)
         {
-            Money.instance.AddMoney(rewardMoney);
->>>>>>> Stashed changes
+            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
         }
 
         if (currentHealth <= 0)
@@ -77,17 +56,20 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    // Tìm đến hàm xử lý quái chết trong script của Enemy (ví dụ: Die() hoặc TakeDamage())
     void Die()
     {
-        // Gọi thẳng sang script Money để cộng thêm 10 tiền
+        if (isDead) return;
+        isDead = true;
+
         if (Money.instance != null)
         {
-            Money.instance.AddMoney(10);
+            Money.instance.AddMoney(rewardMoney);
         }
 
-        // Phá hủy quái vật, làm quái vật biến mất khỏi map
-        Destroy(gameObject);
+        if (canvasTransform != null)
+        {
+            Destroy(canvasTransform.gameObject);
+        }
     }
 
     public void DieWithoutReward()
@@ -95,7 +77,10 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        Destroy(gameObject);
+        if (canvasTransform != null)
+        {
+            Destroy(canvasTransform.gameObject);
+        }
     }
 
     public bool IsDead()

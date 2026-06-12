@@ -1,21 +1,4 @@
 using UnityEngine;
-<<<<<<< Updated upstream
-using TMPro; // Bắt buộc phải có dòng này để điều khiển TextMeshPro
-
-public class Money : MonoBehaviour
-{
-    // Tạo một bản bản sao static để các script khác (như Enemy) có thể gọi tới dễ dàng
-    public static Money instance;
-
-    [Header("Settings")]
-    public int currentMoney = 100; // Số tiền khởi đầu của cháu
-
-    private TextMeshProUGUI moneyText; // Biến để lưu thành phần TextMeshPro
-
-    void Awake()
-    {
-        // Khởi tạo Singleton
-=======
 using TMPro;
 
 public class Money : MonoBehaviour
@@ -30,7 +13,7 @@ public class Money : MonoBehaviour
 
     void Awake()
     {
->>>>>>> Stashed changes
+        // Khởi tạo Singleton để các script khác dễ dàng truy cập bằng Money.instance
         if (instance == null)
         {
             instance = this;
@@ -38,20 +21,14 @@ public class Money : MonoBehaviour
         else
         {
             Destroy(gameObject);
-<<<<<<< Updated upstream
-        }
-
-        // Tự động lấy thành phần TextMeshProUGUI gắn trên chính Object này
-        moneyText = GetComponent<TextMeshProUGUI>();
-=======
             return;
         }
 
+        // Nếu quên chưa kéo thả Text vào Inspector, tự động tìm trên chính Object này
         if (moneyText == null)
         {
             moneyText = GetComponent<TextMeshProUGUI>();
         }
->>>>>>> Stashed changes
     }
 
     void Start()
@@ -59,38 +36,26 @@ public class Money : MonoBehaviour
         UpdateMoneyUI();
     }
 
-<<<<<<< Updated upstream
-    // Hàm để script quái chết gọi sang nhằm cộng tiền
-    public void AddMoney(int amount)
-    {
-        currentMoney += amount;
-        UpdateMoneyUI(); // Cộng xong thì cập nhật chữ hiển thị liền
-    }
-
-    // Hàm để script xây tháp (BuildSpot) gọi sang nhằm trừ tiền
-=======
+    // Hàm để script quái gọi khi chết nhằm cộng tiền thưởng
     public void AddMoney(int amount)
     {
         currentMoney += amount;
         UpdateMoneyUI();
     }
 
->>>>>>> Stashed changes
+    // Hàm để script xây tháp gọi sang nhằm kiểm tra và trừ tiền
     public bool SpendMoney(int amount)
     {
         if (currentMoney >= amount)
         {
             currentMoney -= amount;
             UpdateMoneyUI();
-            return true;
+            return true; // Trả về true nếu đủ tiền và trừ tiền thành công
         }
-        return false;
+        return false; // Trả về false nếu không đủ tiền
     }
 
-<<<<<<< Updated upstream
-    // Hàm cập nhật chữ hiển thị số tiền trên màn hình
-=======
->>>>>>> Stashed changes
+    // Hàm cập nhật chữ hiển thị số tiền trên màn hình UI
     void UpdateMoneyUI()
     {
         if (moneyText != null)

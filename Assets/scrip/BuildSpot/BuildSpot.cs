@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BuildSpot : MonoBehaviour
+public class BuildSpott : MonoBehaviour
 {
     public GameObject towerPrefab;
     public int towerCost = 50;
