@@ -2,40 +2,41 @@ using UnityEngine;
 
 public class Scorpion_health : MonoBehaviour
 {
-    [Header("Máu quái")]
     public float maxHealth = 100f;
     public float currentHealth;
 
     [Header("Tiền thưởng khi chết")]
     public int rewardMoney = 15;
 
-    [Header("UI Thanh Máu")]
-    public Component healthSlider;
+    [Header("Cấu hình Vị trí Thanh Máu")]
+    public GameObject healthBarPrefab;
+    public Vector3 healthBarOffset = new Vector3(0f, 5f, 0f);
 
-    private Transform canvasTransform;
+    private HealthBar activeHealthBar;
     private bool isDead = false;
 
     void Start()
     {
         currentHealth = maxHealth;
 
-        if (healthSlider != null)
+        if (healthBarPrefab != null)
         {
-            healthSlider.GetType().GetProperty("maxValue")?.SetValue(healthSlider, maxHealth, null);
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
+            GameObject barGo = Instantiate(healthBarPrefab, transform.position, Quaternion.identity);
+            barGo.transform.SetParent(transform);
 
-            canvasTransform = healthSlider.transform.parent;
+            activeHealthBar = barGo.GetComponent<HealthBar>();
+            if (activeHealthBar != null)
+            {
+                activeHealthBar.SetupHealthBar(maxHealth);
+            }
         }
     }
 
-    void Update()
+    void LateUpdate()
     {
-        if (isDead) return;
+        if (isDead || activeHealthBar == null) return;
 
-        if (canvasTransform != null)
-        {
-            canvasTransform.position = transform.position + new Vector3(0, 1.5f, 0);
-        }
+        activeHealthBar.transform.position = transform.position + healthBarOffset;
     }
 
     public void TakeDamage(float damage)
@@ -45,15 +46,20 @@ public class Scorpion_health : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        if (healthSlider != null)
+        if (activeHealthBar != null)
         {
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
+            activeHealthBar.SetHealth(currentHealth);
         }
 
         if (currentHealth <= 0)
         {
             Die();
         }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        TakeDamage((float)damage);
     }
 
     void Die()
@@ -66,10 +72,12 @@ public class Scorpion_health : MonoBehaviour
             Money.instance.AddMoney(rewardMoney);
         }
 
-        if (canvasTransform != null)
+        if (activeHealthBar != null)
         {
-            Destroy(canvasTransform.gameObject);
+            Destroy(activeHealthBar.gameObject);
         }
+
+        Destroy(gameObject);
     }
 
     public void DieWithoutReward()
@@ -77,10 +85,12 @@ public class Scorpion_health : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (canvasTransform != null)
+        if (activeHealthBar != null)
         {
-            Destroy(canvasTransform.gameObject);
+            Destroy(activeHealthBar.gameObject);
         }
+
+        Destroy(gameObject);
     }
 
     public bool IsDead()

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3326507132477818508}
   - component: {fileID: 3070010122442784787}
   - component: {fileID: 3053358007928690575}
+  - component: {fileID: 1260973850515232173}
   m_Layer: 0
   m_Name: Scorpion
   m_TagString: Enemy
@@ -146,7 +147,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83923ba3214d64e4f8c97317f8ddca9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1
+  maxHealth: 100
   currentHealth: 0
   rewardMoney: 15
-  healthSlider: {fileID: 0}
+  healthBarPrefab: {fileID: 2723071518174523185, guid: 96922d771d7c2924c99972943cc6d592, type: 3}
+  healthBarOffset: {x: 0.5, y: 1.25, z: 0}
+--- !u!114 &1260973850515232173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6879939972985041555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acaa2a6a2764f224aa5ef62afcb46d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: 0
+  waypoints: []
+  walkSpeed: 2
+  scanRange: 5
+  attackRange: 1.2
+  soldierTag: Soldier
+  runSpeed: 4
+  damageToSoldier: 10
+  attackCooldown: 1.5
+  finalDamage: 1

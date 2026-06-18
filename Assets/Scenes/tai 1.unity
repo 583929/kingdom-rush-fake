@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
-  - {fileID: 2258523804470714253, guid: d3ef4ed6c02424a498f9e64c794ee091, type: 3}
+  - {fileID: 6879939972985041555, guid: 0676bbc4eb13d3147881f0280b1052b7, type: 3}
   waypoints:
   - {fileID: 1061028953}
   - {fileID: 1372554270}

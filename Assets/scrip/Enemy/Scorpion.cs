@@ -29,12 +29,12 @@ public class Scorpion : MonoBehaviour
 
     private Animator anim;
     private bool isAttacking = false;
-    private EnemyHealth healthScript;
+    private Scorpion_health healthScript;
 
     void Start()
     {
         anim = GetComponent<Animator>();
-        healthScript = GetComponent<EnemyHealth>();
+        healthScript = GetComponent<Scorpion_health>();
         FindSoldierRef();
     }
 

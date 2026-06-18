@@ -12,7 +12,7 @@ public class BuildSpott : MonoBehaviour
         if (hasTower)
             return;
 
-        // Đổi từ GameManager sang Money.instance
+        
         if (Money.instance != null && Money.instance.SpendMoney(towerCost))
         {
             Instantiate(towerPrefab, transform.position, Quaternion.identity);

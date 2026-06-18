@@ -106,7 +106,7 @@ MonoBehaviour:
   currentHealth: 0
   rewardMoney: 15
   healthBarPrefab: {fileID: 2723071518174523185, guid: 96922d771d7c2924c99972943cc6d592, type: 3}
-  healthBarOffset: {x: 0, y: 1.5, z: 0}
+  healthBarOffset: {x: 0.5, y: 1.5, z: 0}
 --- !u!114 &5585756909457388611
 MonoBehaviour:
   m_ObjectHideFlags: 0

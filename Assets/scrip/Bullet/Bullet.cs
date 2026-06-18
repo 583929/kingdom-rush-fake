@@ -57,11 +57,9 @@ public class Bullet : MonoBehaviour
     {
         if (target != null)
         {
-            EnemyHealth enemyHealth = target.GetComponent<EnemyHealth>();
-
-            if (enemyHealth != null && !enemyHealth.IsDead())
+            if (target.CompareTag("Enemy"))
             {
-                enemyHealth.TakeDamage(damage);
+                target.SendMessage("TakeDamage", (float)damage, SendMessageOptions.DontRequireReceiver);
 
                 if (towerSource != null)
                 {

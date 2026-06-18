@@ -35,7 +35,6 @@ public class HealthBar : MonoBehaviour
 
     void LateUpdate()
     {
-        // Đề phòng lúc Awake chưa kịp nhận Cha, thì tìm lại ở đây
         if (enemyTransform == null && transform.parent != null)
         {
             enemyTransform = transform.parent;
@@ -43,12 +42,8 @@ public class HealthBar : MonoBehaviour
 
         if (enemyTransform != null)
         {
-            transform.position = enemyTransform.position + new Vector3(0, offsetY, 0);
-
-            // Luôn giữ thanh máu hướng thẳng đứng, không xoay theo quái
             transform.rotation = Quaternion.identity;
 
-            // Nếu quái quay mặt, ép Scale của thanh máu tự sửa lại để không bị lật ngược
             Vector3 currentScale = originalScale;
             currentScale.x = originalScale.x * Mathf.Sign(enemyTransform.localScale.x);
             transform.localScale = currentScale;

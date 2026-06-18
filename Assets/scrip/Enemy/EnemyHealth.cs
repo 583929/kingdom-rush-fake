@@ -9,9 +9,9 @@ public class EnemyHealth : MonoBehaviour
     [Header("Tiền thưởng khi chết")]
     public int rewardMoney = 15;
 
-    [Header("Cấu hình Thanh Máu")]
+    [Header("Cấu hình Vị trí Thanh Máu")]
     public GameObject healthBarPrefab;
-    public Vector3 healthBarOffset = new Vector3(0, 1.5f, 0);
+    public Vector3 healthBarOffset = new Vector3(0f, 5f, 0f);
 
     private HealthBar activeHealthBar;
     private bool isDead = false;
@@ -23,17 +23,21 @@ public class EnemyHealth : MonoBehaviour
         if (healthBarPrefab != null)
         {
             GameObject barGo = Instantiate(healthBarPrefab, transform.position, Quaternion.identity);
-
             barGo.transform.SetParent(transform);
 
             activeHealthBar = barGo.GetComponent<HealthBar>();
             if (activeHealthBar != null)
             {
-                // GỌI SANG HEALTHBAR: Thiết lập máu tối đa ban đầu
-                activeHealthBar.offsetY = healthBarOffset.y;
                 activeHealthBar.SetupHealthBar(maxHealth);
             }
         }
+    }
+
+    void LateUpdate()
+    {
+        if (isDead || activeHealthBar == null) return;
+
+        activeHealthBar.transform.position = transform.position + healthBarOffset;
     }
 
     public void TakeDamage(float damage)
@@ -45,7 +49,6 @@ public class EnemyHealth : MonoBehaviour
 
         if (activeHealthBar != null)
         {
-            // GỌI SANG HEALTHBAR: Cập nhật thanh máu co ngắn lại khi mất máu
             activeHealthBar.SetHealth(currentHealth);
         }
 
