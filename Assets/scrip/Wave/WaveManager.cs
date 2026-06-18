@@ -31,8 +31,6 @@ public class WaveManager : MonoBehaviour
                 GameManager.instance.SetWave(currentWave);
             }
 
-            Debug.Log("<color=cyan>--- Bắt đầu Wave: " + currentWave + " ---</color>");
-
             isSpawning = true;
             isWaveActive = true;
 
@@ -51,11 +49,9 @@ public class WaveManager : MonoBehaviour
             }
 
             isWaveActive = false;
-            Debug.Log("<color=green>Wave " + currentWave + " đã được dọn sạch!</color>");
 
             if (currentWave < totalWaves)
             {
-                Debug.Log("Chờ " + timeBetweenWaves + " giây để chuẩn bị Wave tiếp theo...");
                 yield return new WaitForSeconds(timeBetweenWaves);
             }
         }

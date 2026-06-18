@@ -9,32 +9,36 @@ public class EnemyHealth : MonoBehaviour
     [Header("Tiền thưởng khi chết")]
     public int rewardMoney = 15;
 
-    [Header("UI Thanh Máu")]
-    public Component healthSlider;
+    [Header("Cấu hình Thanh Máu")]
+    public GameObject healthBarPrefab;
+    public Vector3 healthBarOffset = new Vector3(0, 1.5f, 0);
 
-    private Transform canvasTransform;
+    private HealthBar activeHealthBar;
     private bool isDead = false;
 
     void Start()
     {
         currentHealth = maxHealth;
 
-        if (healthSlider != null)
+        if (healthBarPrefab != null)
         {
-            healthSlider.GetType().GetProperty("maxValue")?.SetValue(healthSlider, maxHealth, null);
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
+            // Sinh ra thanh máu ngay tại vị trí của Spawner / con quái
+            GameObject barGo = Instantiate(healthBarPrefab, transform.position, Quaternion.identity);
 
-            canvasTransform = healthSlider.transform.parent;
-        }
-    }
+            // Ép nó làm con của quái ngay lập tức
+            barGo.transform.SetParent(transform);
 
-    void Update()
-    {
-        if (isDead) return;
+            // Đặt lại tọa độ cục bộ (Local Position) đưa nó về đúng vị trí offset trên đầu quái
+            barGo.transform.localPosition = healthBarOffset;
 
-        if (canvasTransform != null)
-        {
-            canvasTransform.position = transform.position + new Vector3(0, 1.5f, 0);
+            // Đặt lại góc xoay cục bộ để nó không bị lệch
+            barGo.transform.localRotation = Quaternion.identity;
+
+            activeHealthBar = barGo.GetComponent<HealthBar>();
+            if (activeHealthBar != null)
+            {
+                activeHealthBar.SetupHealthBar(maxHealth);
+            }
         }
     }
 
@@ -45,9 +49,9 @@ public class EnemyHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
-        if (healthSlider != null)
+        if (activeHealthBar != null)
         {
-            healthSlider.GetType().GetProperty("value")?.SetValue(healthSlider, currentHealth, null);
+            activeHealthBar.SetHealth(currentHealth);
         }
 
         if (currentHealth <= 0)
@@ -66,9 +70,9 @@ public class EnemyHealth : MonoBehaviour
             Money.instance.AddMoney(rewardMoney);
         }
 
-        if (canvasTransform != null)
+        if (activeHealthBar != null)
         {
-            Destroy(canvasTransform.gameObject);
+            Destroy(activeHealthBar.gameObject);
         }
     }
 
@@ -77,9 +81,9 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (canvasTransform != null)
+        if (activeHealthBar != null)
         {
-            Destroy(canvasTransform.gameObject);
+            Destroy(activeHealthBar.gameObject);
         }
     }
 

@@ -40,25 +40,19 @@ public class EnemySpawner : MonoBehaviour
     {
         if (enemyPrefabs == null || enemyPrefabs.Length == 0) return;
 
-        // 1. Chọn ngẫu nhiên một vị trí (chỉ số) trong mảng enemyPrefabs
         int randomIndex = Random.Range(0, enemyPrefabs.Length);
         GameObject selectedPrefab = enemyPrefabs[randomIndex];
 
         if (selectedPrefab == null) return;
 
-        // 2. Tiến hành Nhân bản (Clone) con quái được chọn ra bản đồ
         GameObject enemy = Instantiate(selectedPrefab, transform.position, Quaternion.identity);
 
-        // 3. Tự động ép đường đi và trạng thái sang cho Script nằm trên quái (Không cần biết tên Script)
-        enemy.SendMessage("set_waypoints", waypoints, SendMessageOptions.DontRequireReceiver);
-        enemy.SendMessage("set_currentState", EnemyMovement.EnemyState.Walk, SendMessageOptions.DontRequireReceiver);
-
-        // Mẹo phụ: Nếu trong script quái của chú biến waypoints viết thường, dòng dưới này sẽ ép trực tiếp bằng tay
-        var targetScript = enemy.GetComponent<MonoBehaviour>();
-        if (targetScript != null)
+        // Lấy trực tiếp Script di chuyển trên con quái vừa gọi ra và đổ dữ liệu đường đi vào
+        EnemyMovement movement = enemy.GetComponent<EnemyMovement>();
+        if (movement != null)
         {
-            var field = targetScript.GetType().GetField("waypoints");
-            if (field != null) field.SetValue(targetScript, waypoints);
+            movement.waypoints = waypoints;
+            movement.currentState = EnemyMovement.EnemyState.Walk;
         }
     }
 }

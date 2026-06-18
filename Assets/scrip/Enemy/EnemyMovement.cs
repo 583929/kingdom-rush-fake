@@ -76,12 +76,9 @@ public class EnemyMovement : MonoBehaviour
     public void TriggerDie()
     {
         currentState = EnemyState.Die;
-
         walkSpeed = 0f;
         runSpeed = 0f;
-
         SafePlayAnimation("Tiga_die");
-
         Destroy(gameObject, 2f);
     }
 
@@ -307,7 +304,6 @@ public class EnemyMovement : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, scanRange);
-
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
