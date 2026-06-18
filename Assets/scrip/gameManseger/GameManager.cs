@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,26 +9,27 @@ public class GameManager : MonoBehaviour
     [Header("Player Stats")]
     public int playerHealth = 20;
     public int money = 100;
-    public int currentWave = 0;
-
-    [Range(1, 10)]
-    public int totalWave = 10;
+    public int currentWave = 1;
+    [Header("Gameplay")]
+    [SerializeField] private int maxWave = 10;
 
     [Header("UI")]
     public TMP_Text healthText;
     public TMP_Text moneyText;
     public TMP_Text waveText;
-
-    [Header("Win / Lose Panel")]
     public GameObject winPanel;
     public GameObject losePanel;
     public GameObject finalWavePanel;
 
     [Header("Game State")]
     public bool isGameOver = false;
+    private bool finalWaveReached = false;
+
+    public event Action<int> OnWaveCompleted;
 
     void Awake()
     {
+        // simple singleton guard to avoid multiple managers
         if (instance == null)
         {
             instance = this;
@@ -41,18 +43,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        isGameOver = false;
+        currentWave = Mathf.Clamp(currentWave, 1, maxWave);
+        UpdateUI();
 
         if (winPanel != null)
             winPanel.SetActive(false);
 
         if (losePanel != null)
             losePanel.SetActive(false);
-
-        if (finalWavePanel != null)
-            finalWavePanel.SetActive(false);
-
-        UpdateUI();
     }
 
     public void TakeDamage(int damage)
@@ -61,21 +59,17 @@ public class GameManager : MonoBehaviour
             return;
 
         playerHealth -= damage;
-
-        if (playerHealth < 0)
-            playerHealth = 0;
+        playerHealth = Mathf.Max(playerHealth, 0);
 
         UpdateUI();
 
         if (playerHealth <= 0)
-        {
             LoseGame();
-        }
     }
 
     public void AddMoney(int amount)
     {
-        if (isGameOver)
+        if (isGameOver == true)
             return;
 
         money += amount;
@@ -87,74 +81,82 @@ public class GameManager : MonoBehaviour
         if (isGameOver)
             return false;
 
-        if (money >= amount)
-        {
-            money -= amount;
-            UpdateUI();
-            return true;
-        }
+        if (money < amount)
+            return false;
 
-        return false;
-    }
-
-    // Hàm này dùng cho WaveManager gọi: SetWave(currentWave, totalWaves)
-    public void SetWave(int waveNumber, int maxWave)
-    {
-        if (isGameOver)
-            return;
-
-        currentWave = waveNumber;
-        totalWave = Mathf.Clamp(maxWave, 1, 10);
-
+        money -= amount;
         UpdateUI();
+        return true;
     }
 
-    // Hàm này để tránh lỗi nếu script cũ còn gọi SetWave(currentWave)
     public void SetWave(int waveNumber)
     {
         if (isGameOver)
             return;
 
-        currentWave = waveNumber;
+        currentWave = Mathf.Clamp(waveNumber, 1, maxWave);
         UpdateUI();
+
+        // fire wave completed event for listeners
+        OnWaveCompleted?.Invoke(currentWave);
+
+        if (currentWave >= maxWave && !finalWaveReached)
+        {
+            // mark final wave reached and show finalWavePanel instead of immediate win
+            finalWaveReached = true;
+            if (finalWavePanel != null)
+                finalWavePanel.SetActive(true);
+        }
     }
 
-    public void WinGame()
+    // Advance to the next wave (external systems should call this when ready)
+    public void NextWave()
     {
         if (isGameOver)
             return;
 
+        if (currentWave < maxWave)
+        {
+            SetWave(currentWave + 1);
+        }
+        else if (currentWave >= maxWave && finalWaveReached)
+        {
+            // already at final wave; complete it and win
+            CompleteFinalWaveAndWin();
+        }
+    }
+
+    // Call this to finalize the final wave and trigger win
+    public void CompleteFinalWaveAndWin()
+    {
+        if (isGameOver)
+            return;
+
+        finalWaveReached = false;
+        if (finalWavePanel != null)
+            finalWavePanel.SetActive(false);
+
+        WinGame();
+    }
+
+    public void WinGame()
+    {
         isGameOver = true;
 
         if (winPanel != null)
             winPanel.SetActive(true);
 
-        if (losePanel != null)
-            losePanel.SetActive(false);
-
-        if (finalWavePanel != null)
-            finalWavePanel.SetActive(false);
-
-        Debug.Log("YOU WIN");
+        Debug.Log("You Win!");
     }
 
     public void LoseGame()
     {
-        if (isGameOver)
-            return;
-
         isGameOver = true;
 
         if (losePanel != null)
             losePanel.SetActive(true);
 
-        if (winPanel != null)
-            winPanel.SetActive(false);
-
-        if (finalWavePanel != null)
-            finalWavePanel.SetActive(false);
-
-        Debug.Log("GAME OVER");
+        Debug.Log("Game Over!");
     }
 
     void UpdateUI()
@@ -166,6 +168,6 @@ public class GameManager : MonoBehaviour
             moneyText.text = "Tiền: " + money;
 
         if (waveText != null)
-            waveText.text = "Wave: " + currentWave + " / " + totalWave;
+            waveText.text = $"Wave: {currentWave}/{maxWave}";
     }
 }
