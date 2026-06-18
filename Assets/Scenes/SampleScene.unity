@@ -980,11 +980,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6662922579fbbce47b3040caf8fee0bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentWave: 0
-  totalWaves: 10
-  startingWave: 1
+  currentWave: 1
+  totalWaves: 2
+  startingWave: 5
   enemiesPerWave: 5
-  timeBetweenWaves: 15
+  timeBetweenWaves: 5
   isSpawning: 0
 --- !u!4 &701087125
 Transform:
@@ -1577,10 +1577,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e3b7574214fcb64fb3b6a1a1a591927, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerHealth: 5000
+  playerHealth: 1
   money: 100000
   currentWave: 1
-  maxWave: 1
+  maxWave: 5
   healthText: {fileID: 932628524}
   moneyText: {fileID: 1771819358}
   waveText: {fileID: 368882607}
