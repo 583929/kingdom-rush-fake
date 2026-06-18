@@ -102,7 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcc669713995ed64ca97eb28246afe83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10
+  maxHealth: 100
   currentHealth: 0
   rewardMoney: 15
   healthBarPrefab: {fileID: 2723071518174523185, guid: 96922d771d7c2924c99972943cc6d592, type: 3}

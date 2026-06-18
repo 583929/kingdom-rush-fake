@@ -22,21 +22,15 @@ public class EnemyHealth : MonoBehaviour
 
         if (healthBarPrefab != null)
         {
-            // Sinh ra thanh máu ngay tại vị trí của Spawner / con quái
             GameObject barGo = Instantiate(healthBarPrefab, transform.position, Quaternion.identity);
 
-            // Ép nó làm con của quái ngay lập tức
             barGo.transform.SetParent(transform);
-
-            // Đặt lại tọa độ cục bộ (Local Position) đưa nó về đúng vị trí offset trên đầu quái
-            barGo.transform.localPosition = healthBarOffset;
-
-            // Đặt lại góc xoay cục bộ để nó không bị lệch
-            barGo.transform.localRotation = Quaternion.identity;
 
             activeHealthBar = barGo.GetComponent<HealthBar>();
             if (activeHealthBar != null)
             {
+                // GỌI SANG HEALTHBAR: Thiết lập máu tối đa ban đầu
+                activeHealthBar.offsetY = healthBarOffset.y;
                 activeHealthBar.SetupHealthBar(maxHealth);
             }
         }
@@ -51,6 +45,7 @@ public class EnemyHealth : MonoBehaviour
 
         if (activeHealthBar != null)
         {
+            // GỌI SANG HEALTHBAR: Cập nhật thanh máu co ngắn lại khi mất máu
             activeHealthBar.SetHealth(currentHealth);
         }
 
@@ -74,6 +69,8 @@ public class EnemyHealth : MonoBehaviour
         {
             Destroy(activeHealthBar.gameObject);
         }
+
+        Destroy(gameObject);
     }
 
     public void DieWithoutReward()
@@ -85,6 +82,8 @@ public class EnemyHealth : MonoBehaviour
         {
             Destroy(activeHealthBar.gameObject);
         }
+
+        Destroy(gameObject);
     }
 
     public bool IsDead()

@@ -6,7 +6,7 @@ public class HealthBar : MonoBehaviour
     private Slider slider;
     private Vector3 originalScale;
     private Transform enemyTransform;
-    public float offsetY = 1.5f; // Kho?ng cách thanh máu trên đ?u quái
+    public float offsetY = 1.5f;
 
     void Awake()
     {
@@ -35,18 +35,20 @@ public class HealthBar : MonoBehaviour
 
     void LateUpdate()
     {
-        // Theo d?i v? trí c?a Enemy khi di chuy?n
+        // Đề phòng lúc Awake chưa kịp nhận Cha, thì tìm lại ở đây
+        if (enemyTransform == null && transform.parent != null)
+        {
+            enemyTransform = transform.parent;
+        }
+
         if (enemyTransform != null)
         {
             transform.position = enemyTransform.position + new Vector3(0, offsetY, 0);
-        }
 
-        // Luôn gi? thanh máu hư?ng th?ng đ?ng, không xoay theo quái
-        transform.rotation = Quaternion.identity;
+            // Luôn giữ thanh máu hướng thẳng đứng, không xoay theo quái
+            transform.rotation = Quaternion.identity;
 
-        // N?u quái quay m?t (Scale.x b? âm), ép Scale c?a thanh máu ph?i t? s?a l?i đ? không b? l?t ngư?c
-        if (enemyTransform != null)
-        {
+            // Nếu quái quay mặt, ép Scale của thanh máu tự sửa lại để không bị lật ngược
             Vector3 currentScale = originalScale;
             currentScale.x = originalScale.x * Mathf.Sign(enemyTransform.localScale.x);
             transform.localScale = currentScale;
